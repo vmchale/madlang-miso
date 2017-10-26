@@ -41,7 +41,7 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
 
     ".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.js" %> \out -> do
         need ["src/Lib.hs","{{ project }}.cabal","stack.yaml","mad-src/{{ project }}.mad"]
-        unit $ cmd ["bash", "-c", "madlang debug mad-src/{{ project }}.mad > /dev/null"]
+        unit $ cmd ["bash", "-c", "madlang check mad-src/{{ project }}.mad > /dev/null"]
         cmd ["stack", "build", "--stack-yaml", "stack.yaml", "--install-ghc"]
 
     ".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.min.js" %> \out -> do
