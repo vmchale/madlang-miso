@@ -13,3 +13,7 @@ Then:
 ```
  $ pi init madlang-miso project/
 ```
+
+It looks a lot like
+[this](http://vmchale.com/recursion-scheme-generator/index.html) when you're
+finished.
