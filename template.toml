@@ -3,7 +3,7 @@ with_readme = true
 
 [files]
 directories = ["src", "app", "web-src", "mad-src"]
-templates = ["src/Lib.hs", "shake.hs", "{{ project }}.cabal", "Justfile", "mad-src/{{ project }}.mad", "Setup.hs", "app/Main.hs", "web-src/styles.css", "web-src/index.html", "stack.yaml"]
+templates = ["src/Lib.hs", "shake.hs", "{{ project }}.cabal", "Justfile", "mad-src/{{ project }}.mad", "Setup.hs", "app/Main.hs", "web-src/styles.css", "web-src/index.html", "stack.yaml", "cabal.project.local"]
 
 [config]
 version = "0.1.0.0"

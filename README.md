@@ -5,11 +5,11 @@ This is a template for [pi](https://github.com/vmchale/project-init) using
 [miso](https://haskell-miso.org). To install it:
 
 ```
-git clone https://github.com/vmchale/madlang-miso.git ~/.pi_templates/madlang
+git clone https://github.com/vmchale/madlang-miso.git ~/.pi_templates/madlang-miso
 ```
 
 Then:
 
 ```
- $ pi init madlang project/
+ $ pi init madlang-miso project/
 ```

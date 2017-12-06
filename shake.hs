@@ -11,11 +11,16 @@ main :: IO ()
 main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasic } $ do
     want [ "target/index.html", "README.md" ]
 
+    "deploy" ~> do
+        need [ "target/index.html", "target/all.min.js" ]
+        cmd ["ion", "-c", "cp target/* ~/programming/rust/nessa-site/static/{{ project }}"]
+
     "clean" ~> do
         putNormal "cleaning files..."
-        unit $ cmd ["rm", "-rf", "tags"]
+        unit $ cmd ["rm", "-rf", "tags", "build"]
         removeFilesAfter "target" ["//*"]
-        cmd ["stack", "clean"]
+        removeFilesAfter "dist" ["//*"]
+        removeFilesAfter "dist-newstyle" ["//*"]
 
     "README.md" %> \out -> do
         hs <- getDirectoryFiles "" ["src//*.hs"]
@@ -34,23 +39,26 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
 
     "purge" ~> do
         putNormal "purging local files..."
-        unit $ cmd ["rm", "-rf", "tags", "shake"]
-        removeFilesAfter ".stack-work" ["//*"]
+        unit $ cmd ["rm", "-rf", "tags", "build"]
+        removeFilesAfter "dist-newstyle" ["//*"]
+        removeFilesAfter "dist" ["//*"]
         removeFilesAfter ".shake" ["//*"]
         removeFilesAfter "target" ["//*"]
 
-    ".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.js" %> \out -> do
-        need ["src/Lib.hs","{{ project }}.cabal","stack.yaml","mad-src/{{ project }}.mad"]
+    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \out -> do
+        madlang <- getDirectoryFiles "" ["mad-src//*.mad"]
+        need $ ["src/Lib.hs","{{ project }}.cabal","cabal.project.local"] ++ madlang
+        -- check the {{ project }}.mad file so we don't push anything wrong
         unit $ cmd ["bash", "-c", "madlang check mad-src/{{ project }}.mad > /dev/null"]
-        cmd ["stack", "build", "--stack-yaml", "stack.yaml", "--install-ghc"]
+        cmd ["cabal", "new-build"]
 
-    ".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.min.js" %> \out -> do
-        need [".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.js"]
-        cmd (Cwd ".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/") Shell "ccjs all.js --externs=node --externs=all.js.externs > all.min.js"
+    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.min.js" %> \out -> do
+        need ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js"]
+        cmd (Cwd "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe") Shell "ccjs all.js --externs=node --externs=all.js.externs > all.min.js"
 
     "target/all.min.js" %> \out -> do
-        need [".stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.min.js"]
-        cmd Shell "cp .stack-work/dist/x86_64-linux/Cabal-1.24.2.0_ghcjs/build/{{ project }}/{{ project }}.jsexe/all.min.js target/all.min.js"
+        need ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.min.js"]
+        cmd Shell "cp dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.min.js target/all.min.js"
 
     "target/styles.css" %> \out -> do
         liftIO $ createDirectoryIfMissing True "target"

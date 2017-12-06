@@ -6,20 +6,15 @@ module Lib
     ( exec
     ) where
 
-
-import           Data.FileEmbed (embedStringFile)
 import qualified Data.Map       as M
 import qualified Data.Set       as S
 import           Data.Text      (Text)
 import           Miso
 import           Miso.String
-import           Text.Madlibs   (runText)
-
-sourceFile :: Text
-sourceFile = $(embedStringFile "mad-src/{{ project }}.mad")
+import           Text.Madlibs   (run, madFile)
 
 randomText :: IO Text
-randomText = runText [] "noSrc" sourceFile
+randomText = run $(madFile "mad-src/{{ project }}.mad")
 
 type Model = Text
 
@@ -60,7 +55,7 @@ updateModel (Write t) _  = noEff t
 updateModel NoOp m       = noEff m
 
 keypress :: S.Set Int -> Action
-keypress keys = if 82 `elem` S.toList keys && 17 `notElem` S.toList keys then Regenerate else NoOp
+keypress keys = if 82 `elem` S.toList keys then Regenerate else NoOp
 
 viewModel :: Model -> View Action
 viewModel x = div_ backgroundStyle
