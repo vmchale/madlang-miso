@@ -7,5 +7,5 @@ script:
     cd .shake && ghc-8.2.2 -O2 shake.hs -o build
     @mv .shake/build .
 
-view: build
+view:
     firefox target/index.html
