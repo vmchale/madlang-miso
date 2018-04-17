@@ -6,12 +6,12 @@ module Lib
     ( exec
     ) where
 
-import qualified Data.Map       as M
-import qualified Data.Set       as S
-import           Data.Text      (Text)
+import qualified Data.Map     as M
+import qualified Data.Set     as S
+import           Data.Text    (Text)
 import           Miso
 import           Miso.String
-import           Text.Madlibs   (run, madFile)
+import           Text.Madlibs (madFile, run)
 
 randomText :: IO Text
 randomText = run $(madFile "mad-src/{{ project }}.mad")
@@ -27,6 +27,7 @@ data Action
 exec :: IO ()
 exec = startApp App {..}
   where
+    mountPoint = Nothing
     initialAction = NoOp
     model  = ""
     update = updateModel
