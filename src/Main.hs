@@ -2,8 +2,8 @@
 {-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
-module Lib
-    ( exec
+module Main
+    ( main
     ) where
 
 import qualified Data.Map     as M
@@ -24,8 +24,8 @@ data Action
   | NoOp
   deriving (Show, Eq)
 
-exec :: IO ()
-exec = startApp App {..}
+main :: IO ()
+main = startApp App {..}
   where
     mountPoint = Nothing
     initialAction = NoOp
