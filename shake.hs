@@ -1,12 +1,7 @@
-import           Data.Maybe
-import           Data.Monoid
 import           Development.Shake
 import           Development.Shake.Cabal
 import           Development.Shake.Clean
 import           Development.Shake.ClosureCompiler
-import           Development.Shake.Command
-import           Development.Shake.FilePath
-import           Development.Shake.Util
 import           System.Directory
 import qualified System.IO.Strict                  as Strict
 
@@ -31,13 +26,13 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         html <- getDirectoryFiles "" ["web-src//*.html"]
         css <- getDirectoryFiles "" ["web-src//*.css"]
         need $ hs <> yaml <> cabal <> mad <> html <> css
-        (Stdout out) <- cmd ["poly", "-c", ".", "-e", "README.md", "-e", "TODO.md", "-e", "target", "-e", "Justfile"]
-        file <- liftIO $ Strict.readFile "README.md"
+        (Stdout out') <- cmd ["poly", "-c", ".", "-e", "README.md", "-e", "TODO.md", "-e", "target", "-e", "Justfile"]
+        file <- liftIO $ Strict.readFile out
         let header = takeWhile (/= replicate 79 '-') $ lines file
-        let new = unlines header ++ out ++ "```\n"
-        liftIO $ writeFile "README.md" new
+        let new = unlines header ++ out' ++ "```\n"
+        liftIO $ writeFile out new
 
-    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \out -> do
+    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \_ -> do
         need . snd =<< getCabalDepsA "{{ project }}.cabal"
         -- check the {{ project }}.mad file so we don't push anything wrong
         unit $ cmd ["bash", "-c", "madlang check mad-src/{{ project }}.mad > /dev/null"]
@@ -48,8 +43,8 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
     "target/styles.css" %> \out -> do
         liftIO $ createDirectoryIfMissing True "target"
         need ["web-src/styles.css"]
-        cmd ["cp","web-src/styles.css", "target/styles.css"]
+        copyFile' "web-src/styles.css" out
 
     "target/index.html" %> \out -> do
-        need ["target/all.min.js", "target/styles.css"]
-        cmd ["cp","web-src/index.html", "target/index.html"]
+        need ["target/all.min.js", "web-src/index.html", "target/styles.css"]
+        copyFile' "web-src/index.html" out
