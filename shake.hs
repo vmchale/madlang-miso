@@ -1,6 +1,7 @@
 import           Data.Maybe
 import           Data.Monoid
 import           Development.Shake
+import           Development.Shake.Cabal
 import           Development.Shake.Clean
 import           Development.Shake.ClosureCompiler
 import           Development.Shake.Command
