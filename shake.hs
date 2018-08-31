@@ -32,13 +32,13 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         let new = unlines header ++ out' ++ "```\n"
         liftIO $ writeFile out new
 
-    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \_ -> do
+    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/x/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \_ -> do
         need . snd =<< getCabalDepsA "{{ project }}.cabal"
         -- check the {{ project }}.mad file so we don't push anything wrong
         unit $ cmd ["bash", "-c", "madlang check mad-src/{{ project }}.mad > /dev/null"]
         command [RemEnv "GHC_PACKAGE_PATH"] "cabal" ["new-build"]
 
-    googleClosureCompiler ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js", "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js"] "target/all.min.js"
+    googleClosureCompiler ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/x/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js", "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/x/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js"] "target/all.min.js"
 
     "target/styles.css" %> \out -> do
         liftIO $ createDirectoryIfMissing True "target"
