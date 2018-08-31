@@ -37,8 +37,8 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         liftIO $ writeFile "README.md" new
 
     "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \out -> do
-        madlang <- getDirectoryFiles "" ["mad-src//*.mad"]
-        need $ ["src/Lib.hs","{{ project }}.cabal","cabal.project.local"] ++ madlang
+        need . snd =<< getCabalDepsA "{{ project }}.cabal"
+        command [RemEnv "GHC_PACKAGE_PATH"] "cabal" ["new-build"]
         -- check the {{ project }}.mad file so we don't push anything wrong
         unit $ cmd ["bash", "-c", "madlang check mad-src/{{ project }}.mad > /dev/null"]
         cmd ["cabal", "new-build"]
