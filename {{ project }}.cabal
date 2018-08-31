@@ -21,7 +21,7 @@ Flag development {
 }
 
 executable {{ project }}
-  hs-source-dirs:      app
+  hs-source-dirs:      src
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
