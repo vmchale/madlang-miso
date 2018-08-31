@@ -1,11 +1,13 @@
 import           Data.Maybe
 import           Data.Monoid
 import           Development.Shake
+import           Development.Shake.Clean
+import           Development.Shake.ClosureCompiler
 import           Development.Shake.Command
 import           Development.Shake.FilePath
 import           Development.Shake.Util
 import           System.Directory
-import qualified System.IO.Strict           as Strict
+import qualified System.IO.Strict                  as Strict
 
 main :: IO ()
 main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasic } $ do
@@ -16,11 +18,9 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         cmd ["ion", "-c", "cp target/* ~/programming/rust/nessa-site/static/{{ project }}"]
 
     "clean" ~> do
-        putNormal "cleaning files..."
-        unit $ cmd ["rm", "-rf", "tags", "build"]
+        cleanHaskell
         removeFilesAfter "target" ["//*"]
-        removeFilesAfter "dist" ["//*"]
-        removeFilesAfter "dist-newstyle" ["//*"]
+        removeFilesAfter ".shake" ["//*"]
 
     "README.md" %> \out -> do
         hs <- getDirectoryFiles "" ["src//*.hs"]
@@ -52,13 +52,7 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         unit $ cmd ["bash", "-c", "madlang check mad-src/{{ project }}.mad > /dev/null"]
         cmd ["cabal", "new-build"]
 
-    "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.min.js" %> \out -> do
-        need ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js"]
-        cmd (Cwd "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe") Shell "ccjs all.js --externs=node --externs=all.js.externs > all.min.js"
-
-    "target/all.min.js" %> \out -> do
-        need ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.min.js"]
-        cmd Shell "cp dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.min.js target/all.min.js"
+    googleClosureCompiler ["dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js", "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js"] "target/all.min.js"
 
     "target/styles.css" %> \out -> do
         liftIO $ createDirectoryIfMissing True "target"
