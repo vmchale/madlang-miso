@@ -37,14 +37,6 @@ main = shakeArgs shakeOptions { shakeFiles = ".shake", shakeLint = Just LintBasi
         liftIO $ writeFile "README.md" new
         cmd ["rm", "-f", "README.md.original"]
 
-    "purge" ~> do
-        putNormal "purging local files..."
-        unit $ cmd ["rm", "-rf", "tags", "build"]
-        removeFilesAfter "dist-newstyle" ["//*"]
-        removeFilesAfter "dist" ["//*"]
-        removeFilesAfter ".shake" ["//*"]
-        removeFilesAfter "target" ["//*"]
-
     "dist-newstyle/build/x86_64-linux/ghcjs-0.2.1.9008011/{{ project }}-0.1.0.0/c/{{ project }}/opt/build/{{ project }}/{{ project }}.jsexe/all.js" %> \out -> do
         madlang <- getDirectoryFiles "" ["mad-src//*.mad"]
         need $ ["src/Lib.hs","{{ project }}.cabal","cabal.project.local"] ++ madlang
