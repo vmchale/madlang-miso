@@ -3,7 +3,7 @@ with_readme = true
 
 [files]
 directories = ["src", "web-src", "mad-src"]
-templates = ["src/Main.hs", "shake.hs", "{{ project }}.cabal", "Justfile", "mad-src/{{ project }}.mad", "web-src/styles.css", "web-src/index.html", "cabal.project.local"]
+templates = ["src/Main.hs", "shake.hs", "{{ project }}.cabal", "Justfile", "mad-src/{{ project }}.mad", "web-src/styles.css", "web-src/index.html", "cabal.project.local", ".gitignore"]
 
 [config]
 version = "0.1.0.0"
